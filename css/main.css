@@ -185,6 +185,20 @@ section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
   color: var(--saffron-deep);
 }
 
+/* ---------- demo ribbon ---------- */
+.demo-ribbon {
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 12.5px;
+  letter-spacing: 0.05em;
+  text-align: center;
+  padding: 7px 14px;
+}
+.demo-ribbon strong {
+  color: var(--gold-bright);
+  font-weight: 600;
+}
+
 /* ---------- header ---------- */
 .site-header {
   background: var(--cream);
@@ -291,7 +305,7 @@ section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
 }
 .hero__inner {
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-columns: 1fr 1.1fr;
   align-items: center;
   gap: 2rem;
   position: relative;
@@ -405,6 +419,7 @@ section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   padding: 0.5rem clamp(1rem, 4vw, 2rem) 1.5rem;
+  scroll-padding-inline: clamp(1rem, 4vw, 2rem);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
 }
@@ -572,32 +587,78 @@ section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
   gap: 1.3rem;
   margin-top: 1.8rem;
 }
-.testimonial-card {
-  margin: 0;
-  background: var(--white);
-  border: 2px double var(--gold-bright);
-  border-radius: var(--radius-md);
-  padding: 1.6rem 1.4rem;
-  position: relative;
-}
-.testimonial-card__quote {
-  font-family: var(--font-display);
-  font-size: 3rem;
-  color: var(--saffron);
-  line-height: 0.5;
-  display: block;
-  margin-bottom: 0.6rem;
-}
-.testimonial-card blockquote { margin: 0 0 1rem; }
-.testimonial-card p { color: var(--ink); font-size: var(--fs-sm); margin-bottom: 0; }
-.testimonial-card figcaption {
+/* Google-review look: avatar + name + stars up top, attribution row at the
+   bottom pinned via flex so cards of different text lengths still line up. */
+.testimonials__summary {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.4rem;
+  padding: 1rem 1.3rem;
+  max-width: 420px;
+  background: var(--white);
+  border: 1px solid #e8e0d5;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+.testimonials__summary-score {
   font-family: var(--font-display);
   font-weight: 700;
+  font-size: var(--fs-2xl);
+  line-height: 1;
+  color: var(--ink);
 }
-.testimonial-card__stars { color: var(--gold-bright); letter-spacing: 1px; }
+.testimonials__summary-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.testimonials__summary-stars { color: #FBBC04; font-size: 1rem; letter-spacing: 2px; }
+.testimonials__summary-count { color: var(--ink-soft); font-size: var(--fs-sm); }
+
+.testimonial-card {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid #e8e0d5;
+  border-radius: var(--radius-md);
+  padding: 1.4rem 1.4rem 1.1rem;
+  box-shadow: var(--shadow-soft);
+}
+.testimonial-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+}
+.testimonial-card__avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.testimonial-card__identity { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.testimonial-card__name { font-family: var(--font-body); font-weight: 600; font-size: var(--fs-sm); color: var(--ink); }
+.testimonial-card__stars { color: #FBBC04; font-size: 0.8rem; letter-spacing: 1px; }
+.testimonial-card blockquote { margin: 0 0 1rem; }
+.testimonial-card p { color: var(--ink); font-size: var(--fs-sm); margin-bottom: 0; }
+.testimonial-card__attribution {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
 
 /* ---------- FAQ ---------- */
 .faq h2 { font-size: var(--fs-2xl); }
@@ -1364,7 +1425,7 @@ section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
 .hero__photo-frame {
   position: relative;
   z-index: 2;
-  width: min(100%, 480px);
+  width: min(100%, 560px);
   border: 8px solid var(--white);
   border-radius: 50% 50% var(--radius-lg) var(--radius-lg) / 22% 22% 8% 8%;
   overflow: hidden;
@@ -1382,8 +1443,8 @@ section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
   .hero__photo-frame { transform: translate(22px, -14px) rotate(1deg); }
 }
 @media (max-width: 980px) {
-  .hero__photo-wrap { min-height: 200px; }
-  .hero__photo-frame { width: min(92%, 440px); }
+  .hero__photo-wrap { min-height: 220px; }
+  .hero__photo-frame { width: min(94%, 500px); }
 }
 
 /* ---------- occasion tile photo thumbnail (replaces/joins line-icon) ---------- */
@@ -1750,14 +1811,15 @@ html:not(.js) .demo-book { display: none; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 900ms var(--ease-settle);
+  transition: opacity 1400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .hero__slide.is-active { opacity: 1; }
 .hero__slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* Ken Burns rides the active slide only; alternates zoom direction by data-kb.
-   Gated on html.js so the static first frame never zooms without the engine. */
-html.js .hero__slide.is-active[data-kb="a"] img { animation: kb-in 6.4s var(--ease-settle) forwards; }
-html.js .hero__slide.is-active[data-kb="b"] img { animation: kb-out 6.4s var(--ease-settle) forwards; }
+   Gated on html.js so the static first frame never zooms without the engine.
+   7s so the zoom outlives the 5s auto-advance interval smoothly. */
+html.js .hero__slide.is-active[data-kb="a"] img { animation: kb-in 7s var(--ease-settle) forwards; }
+html.js .hero__slide.is-active[data-kb="b"] img { animation: kb-out 7s var(--ease-settle) forwards; }
 .hero__dots {
   position: absolute;
   left: 0; right: 0; bottom: 12px;

@@ -94,10 +94,12 @@ function balloonIntro() {
 // heroSlideshow() — 4-slide cross-fade + subtle Ken Burns on the hero photo
 // frame (MOTION-SPEC §3.1). Slide 1 is the LCP image (eager + preloaded in
 // markup); slides 2-4 carry a data-src that is promoted to src here, after
-// first paint, so they never compete with LCP. Auto-advances every 5.5s but
-// pauses on hover/touch, when the tab is hidden, and when the hero scrolls
-// out of view. Reduced motion: no auto-advance, no Ken Burns — dots still
-// swap slides instantly. With JS off nothing runs and slide 1 stays shown.
+// first paint, so they never compete with LCP. Auto-advances every 5s but
+// pauses on hover, when the tab is hidden, and when the hero scrolls out of
+// view; a touch just gets an 8s breather before auto-advance resumes (it
+// used to pause forever, which made the slideshow look static on phones).
+// Reduced motion: no auto-advance, no Ken Burns — dots still swap slides
+// instantly. With JS off nothing runs and slide 1 stays shown.
 function heroSlideshow() {
   var root = document.querySelector('[data-slideshow]');
   if (!root) return;
@@ -113,7 +115,7 @@ function heroSlideshow() {
     if (im && im.getAttribute('data-src')) im.src = im.getAttribute('data-src');
   }
 
-  var cur = 0, timer = null, paused = false, onScreen = true;
+  var cur = 0, timer = null, paused = false, onScreen = true, touchResumeTimer = null;
 
   function go(n) {
     n = (n + slides.length) % slides.length;
@@ -124,7 +126,7 @@ function heroSlideshow() {
     slides[cur].classList.add('is-active');
     if (dots[cur]) { dots[cur].classList.add('is-active'); dots[cur].setAttribute('aria-selected', 'true'); }
   }
-  function start() { if (RM || timer || paused || !onScreen) return; timer = setInterval(function () { go(cur + 1); }, 5500); }
+  function start() { if (RM || timer || paused || !onScreen) return; timer = setInterval(function () { go(cur + 1); }, 5000); }
   function stop() { if (timer) { clearInterval(timer); timer = null; } }
 
   for (var d = 0; d < dots.length; d++) {
@@ -134,7 +136,18 @@ function heroSlideshow() {
   }
   root.addEventListener('mouseenter', function () { paused = true; stop(); });
   root.addEventListener('mouseleave', function () { paused = false; start(); });
-  root.addEventListener('touchstart', function () { paused = true; stop(); }, { passive: true });
+  // Touch shouldn't pause forever (that left the slideshow static on phones) —
+  // just stop for a short breather, then resume, re-arming on repeated touches.
+  root.addEventListener('touchstart', function () {
+    stop();
+    paused = true;
+    if (touchResumeTimer) clearTimeout(touchResumeTimer);
+    touchResumeTimer = setTimeout(function () {
+      touchResumeTimer = null;
+      paused = false;
+      start();
+    }, 8000);
+  }, { passive: true });
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) { stop(); } else { start(); }
   });
