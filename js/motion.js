@@ -91,18 +91,27 @@ function balloonIntro() {
   }, 6000);
 }
 
-// heroSlideshow() — 4-slide cross-fade + subtle Ken Burns on the hero photo
-// frame (MOTION-SPEC §3.1). Slide 1 is the LCP image (eager + preloaded in
-// markup); slides 2-4 carry a data-src that is promoted to src here, after
-// first paint, so they never compete with LCP. Auto-advances every 5s but
-// pauses on hover, when the tab is hidden, and when the hero scrolls out of
-// view; a touch just gets an 8s breather before auto-advance resumes (it
-// used to pause forever, which made the slideshow look static on phones).
+// heroSlideshow() — 4-slide cross-fade + subtle Ken Burns, initialized on
+// EVERY [data-slideshow] root on the page (MOTION-SPEC §3.1). Today that's
+// the classic hero photo frame plus the demo-only full-width banner variant
+// (see layout.mjs demoRibbon() + lib/pages/home.mjs heroBannerSection()) —
+// only one is ever visible at a time, but both get a live engine so the
+// ribbon toggle can flip between them with no flash of a dead slideshow.
+// The classic hero's slide 1 is the LCP image (eager + preloaded in
+// markup); every other slide (and, for roots with no eager slide, slide 1
+// too) carries a data-src that is promoted to src here, after first paint,
+// so lazy slides never compete with LCP. Auto-advances every 4s but pauses
+// on hover, when the tab is hidden, and when the root scrolls out of view;
+// a touch just gets an 8s breather before auto-advance resumes (it used to
+// pause forever, which made the slideshow look static on phones).
 // Reduced motion: no auto-advance, no Ken Burns — dots still swap slides
 // instantly. With JS off nothing runs and slide 1 stays shown.
 function heroSlideshow() {
-  var root = document.querySelector('[data-slideshow]');
-  if (!root) return;
+  var roots = document.querySelectorAll('[data-slideshow]');
+  for (var r = 0; r < roots.length; r++) initHeroSlideshow(roots[r]);
+}
+
+function initHeroSlideshow(root) {
   var slides = root.querySelectorAll('.hero__slide');
   var dots = root.querySelectorAll('.hero__dot');
   if (slides.length < 2) return;
@@ -110,7 +119,9 @@ function heroSlideshow() {
   var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Promote deferred slides now (post first paint) so LCP is never delayed.
-  for (var i = 1; i < slides.length; i++) {
+  // Includes slide 0 — roots with no eager slide (e.g. the banner variant)
+  // rely on this to ever show an image at all.
+  for (var i = 0; i < slides.length; i++) {
     var im = slides[i].querySelector('img');
     if (im && im.getAttribute('data-src')) im.src = im.getAttribute('data-src');
   }
@@ -126,7 +137,7 @@ function heroSlideshow() {
     slides[cur].classList.add('is-active');
     if (dots[cur]) { dots[cur].classList.add('is-active'); dots[cur].setAttribute('aria-selected', 'true'); }
   }
-  function start() { if (RM || timer || paused || !onScreen) return; timer = setInterval(function () { go(cur + 1); }, 5000); }
+  function start() { if (RM || timer || paused || !onScreen) return; timer = setInterval(function () { go(cur + 1); }, 4000); }
   function stop() { if (timer) { clearInterval(timer); timer = null; } }
 
   for (var d = 0; d < dots.length; d++) {
@@ -158,6 +169,41 @@ function heroSlideshow() {
     }, { threshold: 0.2 }).observe(root);
   }
   start();
+}
+
+// heroStyleToggle() — demo-only ribbon control that flips the homepage hero
+// between the classic split layout and the CherishX-style full-width banner
+// (see layout.mjs demoRibbon() for the markup and the body-class FOUC guard,
+// and main.css for the body.hero-style-banner visibility rules). Guarded on
+// .demo-toggle-btn existence, so it no-ops on every page except the home
+// page demo ribbon.
+function heroStyleToggle() {
+  var btns = document.querySelectorAll('.demo-toggle-btn');
+  if (!btns.length) return;
+  var KEY = 'se-hero-style';
+
+  function sync(style) {
+    for (var i = 0; i < btns.length; i++) {
+      var isActive = btns[i].getAttribute('data-hero-style') === style;
+      btns[i].setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      btns[i].classList.toggle('is-active', isActive);
+    }
+  }
+
+  for (var i = 0; i < btns.length; i++) {
+    (function (btn) {
+      btn.addEventListener('click', function () {
+        var style = btn.getAttribute('data-hero-style');
+        document.body.classList.toggle('hero-style-banner', style === 'banner');
+        try { localStorage.setItem(KEY, style); } catch (e) {}
+        sync(style);
+      });
+    })(btns[i]);
+  }
+
+  // Body class is already set by the inline FOUC-guard script right after
+  // <body> opens (layout.mjs); just mirror it into the buttons' initial state.
+  sync(document.body.classList.contains('hero-style-banner') ? 'banner' : 'classic');
 }
 
 // testimonialDrift() — turns the testimonials scroll-snap row into an
@@ -241,6 +287,7 @@ function lightboxSwipe() {
 function initMotion() {
   reveal();
   heroSlideshow();
+  heroStyleToggle();
   testimonialDrift();
   lightboxSwipe();
   balloonIntro();
