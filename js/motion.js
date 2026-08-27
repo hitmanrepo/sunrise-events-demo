@@ -137,7 +137,7 @@ function initHeroSlideshow(root) {
     slides[cur].classList.add('is-active');
     if (dots[cur]) { dots[cur].classList.add('is-active'); dots[cur].setAttribute('aria-selected', 'true'); }
   }
-  function start() { if (RM || timer || paused || !onScreen) return; timer = setInterval(function () { go(cur + 1); }, 2800); }
+  function start() { if (RM || timer || paused || !onScreen) return; timer = setInterval(function () { go(cur + 1); }, 1500); }
   function stop() { if (timer) { clearInterval(timer); timer = null; } }
 
   for (var d = 0; d < dots.length; d++) {
