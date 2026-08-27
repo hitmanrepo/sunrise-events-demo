@@ -396,7 +396,7 @@ section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: linear-gradient(180deg, rgba(59, 35, 19, 0) 12%, rgba(59, 35, 19, 0.82) 100%);
+  background: linear-gradient(180deg, rgba(30, 16, 8, 0.18) 0%, rgba(30, 16, 8, 0.28) 35%, rgba(30, 16, 8, 0.68) 68%, rgba(30, 16, 8, 0.94) 100%);
 }
 .hero-banner__content {
   position: absolute;
@@ -405,7 +405,7 @@ section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
   bottom: clamp(2rem, 6vh, 3.5rem);
   z-index: 3;
   color: var(--cream);
-  text-shadow: 0 1px 10px rgba(59, 35, 19, 0.5);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65), 0 1px 3px rgba(0, 0, 0, 0.55);
 }
 .hero-banner__content .eyebrow { color: var(--gold-bright); }
 .hero-banner__title {
